@@ -3,38 +3,19 @@ name: Sync Fork with Upstream
 
 on:
   schedule:
-    # Ogni 2 giorni alle 00:00 UTC
-    - cron: '0 0 */2 * *'
-  workflow_dispatch:  # Permette di eseguire manualmente
+    - cron: '0 0 */2 * *'  # Ogni 2 giorni alle 00:00 UTC
+  workflow_dispatch:       # Esecuzione manuale
 
 jobs:
   sync:
-    name: Sync fork with upstream
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout fork
-        uses: actions/checkout@v4
+      - name: Sync Upstream
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
         with:
-          fetch-depth: 0  # Necessario per avere tutta la history
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Add upstream remote
-        run: |
-          git remote add upstream https://github.com/${{ vars.UPSTREAM_REPO }}.git
-          git remote -v
-
-      - name: Fetch upstream changes
-        run: git fetch upstream ${{ vars.BRANCH }}
-
-      - name: Merge upstream changes
-        run: |
-          git checkout ${{ vars.BRANCH }}
-          git merge --ff-only upstream/${{ vars.BRANCH }}
-
-      - name: Push to fork
-        run: git push origin ${{ vars.BRANCH }}
+          upstream_sync_repo: ${{ vars.UPSTREAM_REPO }}  # Es: "torvalds/linux"
+          upstream_sync_branch: ${{ vars.BRANCH }}       # Es: "main"
+          target_sync_branch: ${{ vars.BRANCH }}         # Es: "main"
+          git_config_pull_rebase: true                   # Evita merge commits
+          # Opzionale: token personalizzato (se GITHUB_TOKEN non basta)
+          # target_repo_token: ${{ secrets.SYNC_TOKEN }}
