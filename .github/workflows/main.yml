@@ -1,21 +1,8 @@
-# .github/workflows/sync-fork.yml
-name: Sync Fork with Upstream
-
-on:
-  schedule:
-    - cron: '0 0 */2 * *'  # Ogni 2 giorni alle 00:00 UTC
-  workflow_dispatch:       # Esecuzione manuale
-
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sync Upstream
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
-        with:
-          upstream_sync_repo: ${{ vars.UPSTREAM_REPO }}  # Es: "torvalds/linux"
-          upstream_sync_branch: ${{ vars.BRANCH }}       # Es: "main"
-          target_sync_branch: ${{ vars.BRANCH }}         # Es: "main"
-          git_config_pull_rebase: true                   # Evita merge commits
-          # Opzionale: token personalizzato (se GITHUB_TOKEN non basta)
-          # target_repo_token: ${{ secrets.SYNC_TOKEN }}
+- name: Debug repository
+  run: |
+    echo "Repository: ${{ github.repository }}"
+    echo "Upstream: ${{ vars.UPSTREAM_REPO }}"
+    echo "Branch: ${{ vars.BRANCH }}"
+    git remote -v
+    git branch -a
+    git status
